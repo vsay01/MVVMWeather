@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.currentweather.CurrentWeatherFragment">
+
+    <ProgressBar
+        android:id="@+id/pb_loading_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="North Aurora" />
+
+    <TextView
+        android:id="@+id/tv_day_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_city"
+        tools:text="Wed 05:40" />
+
+    <TextView
+        android:id="@+id/tv_condition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/iv_condition"
+        app:layout_constraintTop_toBottomOf="@+id/tv_day_time"
+        tools:text="Cloudy" />
+
+    <TextView
+        android:id="@+id/tv_current_temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/current_weather_temp"
+        android:textSize="60sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_condition"
+        tools:text="60° F" />
+
+    <TextView
+        android:id="@+id/tv_feel_like"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/current_weather_feel_like"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_current_temp" />
+
+    <ImageView
+        android:id="@+id/iv_condition"
+        android:layout_width="60dp"
+        android:layout_height="44dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_condition"
+        app:layout_constraintEnd_toStartOf="@+id/tv_condition"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_condition"
+        tools:src="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/tv_temp_feel_like"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/current_weather_temp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_feel_like"
+        app:layout_constraintStart_toEndOf="@+id/tv_feel_like"
+        app:layout_constraintTop_toTopOf="@+id/tv_feel_like"
+        tools:text="72\u00B0 F" />
+
+    <TextView
+        android:id="@+id/tv_temp_max"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/current_weather_temp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_temp_feel_like"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tv_temp_feel_like"
+        tools:text="75\u00B0 F" />
+
+    <ImageView
+        android:id="@+id/iv_max"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:src="@drawable/ic_baseline_arrow_downward_24"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_temp_max"
+        app:layout_constraintEnd_toStartOf="@+id/tv_temp_max"
+        app:layout_constraintTop_toTopOf="@+id/tv_temp_max"
+        app:srcCompat="@drawable/ic_baseline_arrow_upward_24" />
+
+    <TextView
+        android:id="@+id/tv_temp_min"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/current_weather_temp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_temp_max"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tv_temp_max"
+        app:layout_constraintTop_toTopOf="@+id/tv_temp_max"
+        tools:text="57\u00B0 F" />
+
+    <ImageView
+        android:id="@+id/iv_min"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:src="@drawable/ic_baseline_arrow_downward_24"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_temp_min"
+        app:layout_constraintEnd_toStartOf="@+id/tv_temp_min"
+        app:layout_constraintTop_toTopOf="@+id/tv_temp_min" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/gp_weather_top_section"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="iv_condition,tv_temp_max,tv_city,tv_condition,tv_current_temp,iv_max,iv_min,tv_temp_feel_like,tv_temp_min,tv_day_time,tv_feel_like"
+        tools:visibility="visible" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_daily_forecast"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_daily_forecast_label" />
+
+    <TextView
+        android:id="@+id/tv_daily_forecast_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/daily_forecast"
+        android:textColor="@color/black"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_feel_like"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tv_daily_forecast_day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="@string/three_days"
+        android:textColor="@color/black"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_daily_forecast_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_daily_forecast_label"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

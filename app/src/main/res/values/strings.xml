@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">MVVMWeather</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="current_weather_temp">%1$s° F</string>
+    <string name="current_weather_day_month_time">%1$s %2$s %3$s</string>
+    <string name="current_weather_feel_like">Feels like:</string>
+    <string name="weather_condition">Weather condition</string>
+    <string name="daily_forecast">Daily Forecast</string>
+    <string name="three_days">3 days</string>
+</resources>
