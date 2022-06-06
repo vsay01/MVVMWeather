@@ -10,8 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.vsaytech.mvvmweather.data.network.asCurrentWeatherDailyForecastDomainModel
 import com.vsaytech.mvvmweather.data.network.asCurrentWeatherDomainModel
 import com.vsaytech.mvvmweather.data.repository.currentweather.CurrentWeatherRepository
-import com.vsaytech.mvvmweather.ui.currentweather.domain.CurrentWeather
-import com.vsaytech.mvvmweather.ui.currentweather.domain.CurrentWeatherDailyForecast
+import com.vsaytech.mvvmweather.ui.domain.CurrentWeather
+import com.vsaytech.mvvmweather.ui.domain.CurrentWeatherDailyForecast
 import kotlinx.coroutines.launch
 import java.io.IOException
 

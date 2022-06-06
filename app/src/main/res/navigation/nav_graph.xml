@@ -23,6 +23,32 @@
     <fragment
         android:id="@+id/currentWeather"
         android:name="com.vsaytech.mvvmweather.ui.currentweather.CurrentWeatherFragment"
-        android:label="fragment_current_weather"
-        tools:layout="@layout/fragment_current_weather" />
+        android:label="CurrentWeatherFragment"
+        tools:layout="@layout/fragment_current_weather">
+        <argument
+            android:name="currentWeatherDailyForecast"
+            app:argType="com.vsaytech.mvvmweather.ui.domain.CurrentWeatherDailyForecast" />
+
+        <argument
+            android:name="currentLocationName"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <action
+            android:id="@+id/action_currentWeather_to_dailyForecastFragment"
+            app:destination="@id/dailyForecastFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/dailyForecastFragment"
+        android:name="com.vsaytech.mvvmweather.ui.dailyforecast.DailyForecastFragment"
+        android:label="DailyForecastFragment"
+        tools:layout="@layout/fragment_daily_forecast">
+        <argument
+            android:name="currentWeatherDailyForecast"
+            app:argType="com.vsaytech.mvvmweather.ui.domain.CurrentWeatherDailyForecast" />
+        <argument
+            android:name="currentLocationName"
+            android:defaultValue=""
+            app:argType="string" />
+    </fragment>
 </navigation>

@@ -5,11 +5,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.vsaytech.mvvmweather.databinding.DailyForecastItemBinding
-import com.vsaytech.mvvmweather.ui.currentweather.domain.CurrentWeatherDailyForecast
+import com.vsaytech.mvvmweather.ui.domain.CurrentWeatherDailyForecast
 import com.vsaytech.mvvmweather.util.getDayNameFromDateString
 import com.vsaytech.mvvmweather.util.getMonthDayFromDateString
 
-class DailyForecastAdapter() : RecyclerView.Adapter<DailyForecastViewHolder>() {
+class DailyForecastAdapter(private val dailyForecastClickLister: DailyForecastClickListener) : RecyclerView.Adapter<DailyForecastViewHolder>() {
     /**
      * The WeatherDailyForecastList that our Adapter will show
      */
@@ -41,7 +41,7 @@ class DailyForecastAdapter() : RecyclerView.Adapter<DailyForecastViewHolder>() {
      */
     override fun onBindViewHolder(holder: DailyForecastViewHolder, position: Int) {
         val paymentBean: CurrentWeatherDailyForecast = currentWeatherDailyForecastList[position]
-        holder.bind(paymentBean)
+        holder.bind(paymentBean, dailyForecastClickLister)
     }
 }
 
@@ -50,8 +50,11 @@ class DailyForecastAdapter() : RecyclerView.Adapter<DailyForecastViewHolder>() {
  */
 class DailyForecastViewHolder(private val itemBinding: DailyForecastItemBinding) :
     RecyclerView.ViewHolder(itemBinding.root) {
-    fun bind(currentWeatherDailyForecast: CurrentWeatherDailyForecast) {
+    fun bind(currentWeatherDailyForecast: CurrentWeatherDailyForecast, dailyForecastClickLister: DailyForecastClickListener) {
         itemBinding.apply {
+            clDailyForecast.setOnClickListener {
+                dailyForecastClickLister.onDailyForecastClicked(currentWeatherDailyForecast)
+            }
             tvDay.text = getDayNameFromDateString(currentWeatherDailyForecast.day)
             tvDate.text = getMonthDayFromDateString(currentWeatherDailyForecast.monthDay)
             tvCondition.text = currentWeatherDailyForecast.conditionText

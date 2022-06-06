@@ -1,0 +1,10 @@
+<resources>
+    <string name="hour_forecast">Hourly Forecast - %1$s</string>
+    <string name="hour_humidity">Humidity</string>
+    <string name="hour_wind">Wind</string>
+    <string name="hour_wind_value">%1$s mph</string>
+    <string name="sun_rise">Sun Rise: %1$s</string>
+    <string name="sun_set">Sun Set: %1$s</string>
+    <string name="moon_rise">Moon Rise: %1$s</string>
+    <string name="moon_set">Moon Set: %1$s</string>
+</resources>

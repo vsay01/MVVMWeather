@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:layout_marginBottom="16dp">
+
+    <TextView
+        android:id="@+id/tv_hourly_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="12:00" />
+
+    <TextView
+        android:id="@+id/tv_hourly_condition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:textColor="#000000"
+        app:layout_constraintStart_toEndOf="@+id/iv_hourly_condition_icon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Mostly cloudy" />
+
+    <TextView
+        android:id="@+id/tv_hourly_humidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/tv_hourly_condition"
+        app:layout_constraintTop_toBottomOf="@+id/tv_hourly_condition"
+        android:text="@string/hour_humidity" />
+
+    <TextView
+        android:id="@+id/tv_hourly_humidity_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_hourly_humidity"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="97" />
+
+    <TextView
+        android:id="@+id/tv_hourly_wind_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_hourly_wind"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_hourly_wind"
+        tools:text="6.5 mph" />
+
+    <TextView
+        android:id="@+id/tv_hourly_wind"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/tv_hourly_humidity"
+        app:layout_constraintTop_toBottomOf="@+id/tv_hourly_humidity"
+        android:text="@string/hour_wind" />
+
+    <ImageView
+        android:id="@+id/iv_hourly_condition_icon"
+        android:layout_width="60dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="@string/weather_condition"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_hourly_time"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/tv_hourly_weather"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_hourly_condition_icon"
+        tools:text="78° F" />
+
+    <TextView
+        android:id="@+id/tv_hourly_feel_like"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/current_weather_feel_like"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_hourly_weather"
+        app:layout_constraintStart_toStartOf="@+id/tv_hourly_wind" />
+
+    <TextView
+        android:id="@+id/tv_hourly_temp_feel_like"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/current_weather_temp"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_hourly_feel_like"
+        app:layout_constraintStart_toEndOf="@+id/tv_hourly_feel_like"
+        app:layout_constraintTop_toTopOf="@+id/tv_hourly_feel_like"
+        tools:text="72\u00B0 F" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

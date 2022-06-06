@@ -7,7 +7,7 @@ const val DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm"
 const val DATE_TIME_FORMAT_SECONDARY = "yyyy-MM-dd"
 const val DAY_FORMAT = "EEEE"
 const val MONTH_DAY_FORMAT = "MMM/dd"
-const val TIME_FORMAT = "HH:mm"
+const val TIME_FORMAT = "hh:mm aa"
 const val TODAY = "Today"
 
 fun getDayNameFromDateTimeString(dateTime: String): String? {

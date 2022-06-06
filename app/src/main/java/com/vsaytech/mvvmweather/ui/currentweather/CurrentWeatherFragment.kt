@@ -7,10 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.Debug.getLocation
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -20,7 +23,8 @@ import com.vsaytech.mvvmweather.R
 import com.vsaytech.mvvmweather.databinding.FragmentCurrentWeatherBinding
 import com.vsaytech.mvvmweather.extensions.getLastLocation
 import com.vsaytech.mvvmweather.extensions.locationPermissions
-import com.vsaytech.mvvmweather.ui.currentweather.domain.CurrentWeather
+import com.vsaytech.mvvmweather.ui.domain.CurrentWeather
+import com.vsaytech.mvvmweather.ui.domain.CurrentWeatherDailyForecast
 import com.vsaytech.mvvmweather.util.getDayNameFromDateTimeString
 import com.vsaytech.mvvmweather.util.getMonthDayFromDateTimeString
 import com.vsaytech.mvvmweather.util.getTimeFromDateString
@@ -89,6 +93,11 @@ class CurrentWeatherFragment : Fragment() {
         initView()
     }
 
+    override fun onResume() {
+        super.onResume()
+        (activity as AppCompatActivity).supportActionBar?.hide()
+    }
+
     private fun manageLastLocation() {
         activity?.let { fusedLocationClient = LocationServices.getFusedLocationProviderClient(it) }
         getLastLocation(fusedLocationClient, object : LastLocationListener {
@@ -107,7 +116,12 @@ class CurrentWeatherFragment : Fragment() {
             currentWeather?.apply {
                 binding.apply {
                     tvCity.text = name
-                    tvDayTime.text = getString(R.string.current_weather_day_month_time, getDayNameFromDateTimeString(currentDayTime), getMonthDayFromDateTimeString(currentDayTime), getTimeFromDateString(currentDayTime))
+                    tvDayTime.text = getString(
+                        R.string.current_weather_day_month_time,
+                        getDayNameFromDateTimeString(currentDayTime),
+                        getMonthDayFromDateTimeString(currentDayTime),
+                        getTimeFromDateString(currentDayTime)
+                    )
                     tvCondition.text = conditionText
                     activity?.let { Glide.with(it).load(conditionIcon).into(ivCondition) }
                     tvCurrentTemp.text = getString(R.string.current_weather_temp, temp_f.toString())
@@ -140,7 +154,24 @@ class CurrentWeatherFragment : Fragment() {
         }
 
         //DailyForecast List
-        dailyForecastAdapter = DailyForecastAdapter()
+        dailyForecastAdapter = DailyForecastAdapter(object : DailyForecastClickListener {
+            override fun onDailyForecastClicked(currentWeatherDailyForecast: CurrentWeatherDailyForecast) {
+                val options = navOptions {
+                    anim {
+                        enter = R.anim.slide_in_right
+                        exit = R.anim.slide_out_left
+                        popEnter = R.anim.slide_in_left
+                        popExit = R.anim.slide_out_right
+                    }
+                }
+                this@CurrentWeatherFragment.findNavController()
+                    .navigate(
+                        CurrentWeatherFragmentDirections.actionCurrentWeatherToDailyForecastFragment(currentWeatherDailyForecast)
+                            .setCurrentLocationName(binding.tvCity.text.toString()),
+                        options
+                    )
+            }
+        })
         binding.rvDailyForecast.apply {
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             layoutManager = LinearLayoutManager(context)

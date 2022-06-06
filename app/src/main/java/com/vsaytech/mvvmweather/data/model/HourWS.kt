@@ -1,5 +1,9 @@
 package com.vsaytech.mvvmweather.data.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class HourWS(
     val chance_of_rain: Int?,
     val chance_of_snow: Int?,
@@ -34,4 +38,4 @@ data class HourWS(
     val wind_mph: Double?,
     val windchill_c: Double?,
     val windchill_f: Double?
-)
+): Parcelable

@@ -1,6 +1,9 @@
-package com.vsaytech.mvvmweather.ui.currentweather.domain
+package com.vsaytech.mvvmweather.ui.domain
 
-import com.vsaytech.mvvmweather.data.model.ConditionXWS
+import android.os.Parcelable
+import com.vsaytech.mvvmweather.data.model.AstroWS
+import com.vsaytech.mvvmweather.data.model.HourWS
+import kotlinx.parcelize.Parcelize
 
 /**
  * Domain objects are plain Kotlin data classes that represent the things in our app. These are the
@@ -25,6 +28,7 @@ data class CurrentWeather(
     val conditionIcon: String
 )
 
+@Parcelize
 data class CurrentWeatherDailyForecast(
     val day: String,
     val monthDay: String,
@@ -34,4 +38,6 @@ data class CurrentWeatherDailyForecast(
     val maxtemp_f: Double,
     val mintemp_c: Double,
     val mintemp_f: Double,
-)
+    val astro: AstroWS,
+    val hourList: List<HourWS>
+) : Parcelable
