@@ -1,5 +1,6 @@
 package com.vsaytech.mvvmweather.data.network
 
+import com.vsaytech.mvvmweather.data.database.CurrentWeatherDB
 import com.vsaytech.mvvmweather.data.model.CurrentWeatherWS
 import com.vsaytech.mvvmweather.data.model.ForecastWS
 import com.vsaytech.mvvmweather.extensions.ifNull
@@ -13,9 +14,9 @@ import com.vsaytech.mvvmweather.ui.domain.CurrentWeatherDailyForecast
  */
 
 /**
- * Convert Network results to CurrentWeather domain object
+ * Convert database results CurrentWeatherDB to CurrentWeather UI domain object
  */
-fun CurrentWeatherWS.asCurrentWeatherDomainModel(): CurrentWeather {
+fun CurrentWeatherDB.asCurrentWeatherDomainModel(): CurrentWeather {
     return CurrentWeather(
         name = location.name.ifNull(),
         region = location.region.ifNull(),
@@ -34,7 +35,7 @@ fun CurrentWeatherWS.asCurrentWeatherDomainModel(): CurrentWeather {
 }
 
 /**
- * Convert Network results to CurrentWeatherDailyForecast domain object
+ * Convert CurrentWeatherDB to CurrentWeatherDailyForecast UI domain object
  */
 fun ForecastWS.asCurrentWeatherDailyForecastDomainModel(): List<CurrentWeatherDailyForecast> {
     return forecastday.map {
@@ -51,4 +52,15 @@ fun ForecastWS.asCurrentWeatherDailyForecastDomainModel(): List<CurrentWeatherDa
             hourList = it.hour
         )
     }
+}
+
+/**
+ * Convert Network results CurrentWeatherWS to database objects CurrentWeatherDB
+ */
+fun CurrentWeatherWS.asDatabaseModel(): CurrentWeatherDB {
+    return CurrentWeatherDB(
+        current = current,
+        forecast = forecast,
+        location = location
+    )
 }

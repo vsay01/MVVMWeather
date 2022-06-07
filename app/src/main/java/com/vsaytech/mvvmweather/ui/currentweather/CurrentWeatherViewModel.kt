@@ -7,8 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.vsaytech.mvvmweather.data.network.asCurrentWeatherDailyForecastDomainModel
-import com.vsaytech.mvvmweather.data.network.asCurrentWeatherDomainModel
+import com.vsaytech.mvvmweather.data.database.getDatabase
 import com.vsaytech.mvvmweather.data.repository.currentweather.CurrentWeatherRepository
 import com.vsaytech.mvvmweather.ui.domain.CurrentWeather
 import com.vsaytech.mvvmweather.ui.domain.CurrentWeatherDailyForecast
@@ -20,18 +19,17 @@ class CurrentWeatherViewModel(application: Application) : AndroidViewModel(appli
     /**
      * The data source this ViewModel will fetch results from.
      */
-    private val currentWeatherRepository = CurrentWeatherRepository()
+    private val currentWeatherRepository = CurrentWeatherRepository(getDatabase(application))
 
     /**
      * A currentWeather displayed on the screen.
      */
-    private val _currentWeather: MutableLiveData<CurrentWeather> = MutableLiveData()
-    val currentWeather: LiveData<CurrentWeather>
-        get() = _currentWeather
+    val currentWeather: LiveData<CurrentWeather> = currentWeatherRepository.currentWeather
 
-    private val _currentWeatherDailyForecastList: MutableLiveData<List<CurrentWeatherDailyForecast>> = MutableLiveData()
-    val currentWeatherDailyForecastList: LiveData<List<CurrentWeatherDailyForecast>>
-        get() = _currentWeatherDailyForecastList
+    /**
+     * A dailyForecastWeather displayed on the screen.
+     */
+    val dailyForecastWeatherList: LiveData<List<CurrentWeatherDailyForecast>> = currentWeatherRepository.dailyForecastWeatherList
 
     /**
      * Event triggered for network error. This is private to avoid exposing a
@@ -59,10 +57,6 @@ class CurrentWeatherViewModel(application: Application) : AndroidViewModel(appli
     val isNetworkErrorShown: LiveData<Boolean>
         get() = _isNetworkErrorShown
 
-    /*init {
-        refreshCurrentWeatherFromRepository("North Aurora")
-    }*/
-
     /**
      * Refresh data from the repository. Use a coroutine launch to run in a
      * background thread.
@@ -70,10 +64,7 @@ class CurrentWeatherViewModel(application: Application) : AndroidViewModel(appli
     fun refreshCurrentWeatherFromRepository(location: String) {
         viewModelScope.launch {
             try {
-                val currentWeatherWS = currentWeatherRepository.getCurrentWeather(location)
-                _currentWeather.value = currentWeatherWS.asCurrentWeatherDomainModel()
-                _currentWeatherDailyForecastList.value = currentWeatherWS.forecast.asCurrentWeatherDailyForecastDomainModel()
-
+                currentWeatherRepository.getCurrentWeather(location)
                 _eventNetworkError.value = false
                 _isNetworkErrorShown.value = false
 

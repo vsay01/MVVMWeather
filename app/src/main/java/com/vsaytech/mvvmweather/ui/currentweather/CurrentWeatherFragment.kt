@@ -130,7 +130,7 @@ class CurrentWeatherFragment : Fragment() {
                 }
             }
         }
-        viewModel.currentWeatherDailyForecastList.observe(viewLifecycleOwner) { currentWeatherDailyForecast ->
+        viewModel.dailyForecastWeatherList.observe(viewLifecycleOwner) { currentWeatherDailyForecast ->
             currentWeatherDailyForecast?.apply {
                 binding.apply {
                     if (currentWeatherDailyForecast.isNotEmpty()) {
