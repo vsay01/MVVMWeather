@@ -1,6 +1,7 @@
 package com.vsaytech.mvvmweather.ui.currentweather
 
 import android.app.Application
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,15 +12,17 @@ import com.vsaytech.mvvmweather.data.database.getDatabase
 import com.vsaytech.mvvmweather.data.repository.currentweather.CurrentWeatherRepository
 import com.vsaytech.mvvmweather.ui.domain.CurrentWeather
 import com.vsaytech.mvvmweather.ui.domain.CurrentWeatherDailyForecast
+import com.vsaytech.mvvmweather.util.LOCATION_PREFERENCE_KEY
+import com.vsaytech.mvvmweather.util.locationDataStore
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-class CurrentWeatherViewModel(application: Application) : AndroidViewModel(application) {
+class CurrentWeatherViewModel(private val app: Application) : AndroidViewModel(app) {
 
     /**
      * The data source this ViewModel will fetch results from.
      */
-    private val currentWeatherRepository = CurrentWeatherRepository(getDatabase(application))
+    private val currentWeatherRepository = CurrentWeatherRepository(getDatabase(app))
 
     /**
      * A currentWeather displayed on the screen.
@@ -64,6 +67,7 @@ class CurrentWeatherViewModel(application: Application) : AndroidViewModel(appli
     fun refreshCurrentWeatherFromRepository(location: String) {
         viewModelScope.launch {
             try {
+                saveLocationDataStore(location)
                 currentWeatherRepository.getCurrentWeather(location)
                 _eventNetworkError.value = false
                 _isNetworkErrorShown.value = false
@@ -73,6 +77,12 @@ class CurrentWeatherViewModel(application: Application) : AndroidViewModel(appli
                 if (currentWeather.value == null)
                     _eventNetworkError.value = true
             }
+        }
+    }
+
+    private suspend fun saveLocationDataStore(locationParams: String) {
+        app.locationDataStore.edit { location ->
+            location[LOCATION_PREFERENCE_KEY] = locationParams
         }
     }
 

@@ -127,6 +127,7 @@ class CurrentWeatherFragment : Fragment() {
                     tvCurrentTemp.text = getString(R.string.current_weather_temp, temp_f.toString())
                     tvTempFeelLike.text = getString(R.string.current_weather_temp, feelslike_f.toString())
                     gpWeatherTopSection.visibility = View.VISIBLE
+                    pbLoadingSpinner.visibility = View.GONE
                 }
             }
         }

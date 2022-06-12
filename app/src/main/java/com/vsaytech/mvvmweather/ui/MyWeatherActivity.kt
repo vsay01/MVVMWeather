@@ -1,4 +1,4 @@
-package com.vsaytech.mvvmweather
+package com.vsaytech.mvvmweather.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

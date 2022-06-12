@@ -47,9 +47,9 @@ android {
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
     testImplementation 'junit:junit:4.13.2'
@@ -103,6 +103,9 @@ dependencies {
     def work_version = "1.0.1"
     implementation "android.arch.work:work-runtime-ktx:$work_version"
 
-    implementation "com.google.android.gms:play-services-location:19.0.1"
+    implementation "com.google.android.gms:play-services-location:20.0.0"
     implementation "androidx.work:work-runtime-ktx:2.7.1"
+
+    // DataStore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 }
