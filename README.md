@@ -4,7 +4,7 @@
 Mini weather application that shows the weather of the current location. It also shows the hourly forecast of that location as well.
 The goal of this project is to show how we can follow Model-view-viewmodel (MVVM) architecture.
 
-<img src="/results/android_architect_image.png" width="260">
+<img src="/results/android_architect_image.png" width="360">
 
 ## :camera_flash: Screenshots
 <img src="/results/current_weather_screen.png" width="260">&emsp;<img src="/results/hourly_forecast_screen.png" width="260">
@@ -26,7 +26,8 @@ In this sample project, it focus on:
 - MVVM with network call only
 - MVVM with network call and database (Room)
 - Navigation with Android architecture component
-- WorkManager (TBD)
+- WorkManager
+- DataStore
 
 ## Dependencies
 - Navigation
@@ -37,22 +38,24 @@ In this sample project, it focus on:
 - LiveData
 - Glide
 - Room
+- DataStore
 
 ## Branches
 
-| Branches      | What do we have?                          |
-| ------------- |:-----------------------------------------:|
-| `master`      | MVVM with network call and database       |
-| `remoteonly`  | MVVM with network call only               |
-| `datasource`  | MVVM with network call and database (Room)|
+| Branches      | What do we have?                                                                      |
+| ------------- |:-------------------------------------------------------------------------------------:|
+| `master`      | MVVM with network call and database                                                   |
+| `remoteonly`  | MVVM with network call only                                                           |
+| `datasource`  | MVVM with network call and database (Room)                                            |
+| `workmanager` | Add a work manager to get the current weather with the saved location from DataStore  |
 
 ## Recommended app architecture
 
 Note: The recommendations and template only allow projects to scale, improve quality and robustness, and make them easier to test.
 However, this is only just guidelines, and we should adapt them to our requirements as needed.
 
-- [Drive UI from data models](https://developer.android.com/topic/architecture)
-Another important principle is that you should drive your UI from data models, preferably persistent models (room).
+[Drive UI from data models](https://developer.android.com/topic/architecture)
+The important principle is that you should drive your UI from data models, preferably persistent models (room).
 Data models represent the data of an app. They're independent from the UI elements and other components in your app.
 This means that they are not tied to the UI and app component lifecycle, but will still be destroyed when the OS decides to remove the app's process from memory.
 Persistent models are ideal for the following reasons:
@@ -71,11 +74,13 @@ There are three layers:
 
 <img src="/results/data_layer.png" width="260">
 
-## Model–view–viewmodel (MVVM) with network call only
+## Model–view–viewmodel (MVVM) with network call only (TBD)
 
-## Model–view–viewmodel (MVVM) with network call with database
+## Model–view–viewmodel (MVVM) with network call with database (TBD)
 
-## Navigation with Android architecture component
+## Navigation with Android architecture component (TBD)
+
+## WorkManager and DataStore (TBD)
 
 ```
 Copyright 2022 The Android Open Source Project
