@@ -10,11 +10,12 @@ import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CurrentWeatherDao {
     @Query("select * from currentweatherdb LIMIT 1")
-    fun getCurrentWeather(): LiveData<CurrentWeatherDB>
+    fun getCurrentWeather(): Flow<CurrentWeatherDB>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertCurrentWeather(currentWeatherDB: CurrentWeatherDB)

@@ -5,15 +5,20 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.vsaytech.mvvmweather.data.database.getDatabase
+import com.vsaytech.mvvmweather.data.network.asCurrentWeatherDailyForecastDomainModel
+import com.vsaytech.mvvmweather.data.network.asCurrentWeatherDomainModel
 import com.vsaytech.mvvmweather.data.repository.currentweather.CurrentWeatherRepository
 import com.vsaytech.mvvmweather.ui.domain.CurrentWeather
 import com.vsaytech.mvvmweather.ui.domain.CurrentWeatherDailyForecast
 import com.vsaytech.mvvmweather.util.LOCATION_PREFERENCE_KEY
 import com.vsaytech.mvvmweather.util.locationDataStore
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -27,12 +32,26 @@ class CurrentWeatherViewModel(private val app: Application) : AndroidViewModel(a
     /**
      * A currentWeather displayed on the screen.
      */
-    val currentWeather: LiveData<CurrentWeather> = currentWeatherRepository.currentWeather
+    val currentWeather: LiveData<CurrentWeather> = Transformations.map(
+        currentWeatherRepository.currentWeather
+            .catch {
+                _eventNetworkError.value = true
+            }.asLiveData()
+    ) {
+        it.asCurrentWeatherDomainModel()
+    }
 
     /**
      * A dailyForecastWeather displayed on the screen.
      */
-    val dailyForecastWeatherList: LiveData<List<CurrentWeatherDailyForecast>> = currentWeatherRepository.dailyForecastWeatherList
+    val dailyForecastWeatherList: LiveData<List<CurrentWeatherDailyForecast>> = Transformations.map(
+        currentWeatherRepository.currentWeather
+            .catch {
+                _eventNetworkError.value = true
+            }.asLiveData()
+    ) {
+        it.forecast.asCurrentWeatherDailyForecastDomainModel()
+    }
 
     /**
      * Event triggered for network error. This is private to avoid exposing a

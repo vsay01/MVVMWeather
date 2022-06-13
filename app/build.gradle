@@ -86,6 +86,7 @@ dependencies {
     def lifecycle_version = "2.2.0"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.1"
 
     // logging
     implementation 'com.jakewharton.timber:timber:5.0.1'
@@ -98,6 +99,7 @@ dependencies {
     def room_version = "2.1.0-alpha06"
     implementation "androidx.room:room-runtime:2.4.2"
     kapt "androidx.room:room-compiler:2.4.2"
+    implementation "androidx.room:room-ktx:2.4.2"
 
     // WorkManager dependency
     def work_version = "1.0.1"

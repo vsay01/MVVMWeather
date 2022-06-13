@@ -1,16 +1,12 @@
 package com.vsaytech.mvvmweather.data.repository.currentweather
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
+import com.vsaytech.mvvmweather.data.database.CurrentWeatherDB
 import com.vsaytech.mvvmweather.data.database.CurrentWeatherDatabase
 import com.vsaytech.mvvmweather.data.network.RemoteDataSource
 import com.vsaytech.mvvmweather.data.network.WeatherNetwork
-import com.vsaytech.mvvmweather.data.network.asCurrentWeatherDailyForecastDomainModel
-import com.vsaytech.mvvmweather.data.network.asCurrentWeatherDomainModel
 import com.vsaytech.mvvmweather.data.network.asDatabaseModel
-import com.vsaytech.mvvmweather.ui.domain.CurrentWeather
-import com.vsaytech.mvvmweather.ui.domain.CurrentWeatherDailyForecast
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
@@ -19,13 +15,17 @@ import timber.log.Timber
  */
 class CurrentWeatherRepository(private val database: CurrentWeatherDatabase) {
 
-    val currentWeather: LiveData<CurrentWeather> = Transformations.map(database.currentWeatherDao.getCurrentWeather()) {
+    //Use this if you want to return LiveData to ViewModel
+    /*val currentWeather: LiveData<CurrentWeather> = Transformations.map(database.currentWeatherDao.getCurrentWeather().asLiveData()) {
         it.asCurrentWeatherDomainModel()
     }
 
-    val dailyForecastWeatherList: LiveData<List<CurrentWeatherDailyForecast>> = Transformations.map(database.currentWeatherDao.getCurrentWeather()) {
+    val dailyForecastWeatherList: LiveData<List<CurrentWeatherDailyForecast>> = Transformations.map(database.currentWeatherDao.getCurrentWeather().asLiveData()) {
         it.forecast.asCurrentWeatherDailyForecastDomainModel()
-    }
+    }*/
+
+    //Use this if you want to return Flow to ViewModel
+    val currentWeather: Flow<CurrentWeatherDB> = database.currentWeatherDao.getCurrentWeather()
 
     suspend fun getCurrentWeather(location: String) {
         withContext(Dispatchers.IO) {
