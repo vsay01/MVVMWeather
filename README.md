@@ -28,6 +28,7 @@ In this sample project, it focus on:
 - Navigation with Android architecture component
 - WorkManager
 - DataStore
+- Use kotlin Flow in MVVM
 
 ## Dependencies
 - Navigation
@@ -39,6 +40,7 @@ In this sample project, it focus on:
 - Glide
 - Room
 - DataStore
+- Flow
 
 ## Branches
 
@@ -48,6 +50,7 @@ In this sample project, it focus on:
 | `remoteonly`  | MVVM with network call only                                                           |
 | `datasource`  | MVVM with network call and database (Room)                                            |
 | `workmanager` | Add a work manager to get the current weather with the saved location from DataStore  |
+| `flow`        | Show how to use kotlin flow in MVVM                                                   |
 
 ## Recommended app architecture
 
@@ -81,6 +84,10 @@ There are three layers:
 ## Navigation with Android architecture component (TBD)
 
 ## WorkManager and DataStore (TBD)
+
+
+## Kotlin Flow in MVVM (TBD)
+
 
 ```
 Copyright 2022 The Android Open Source Project
