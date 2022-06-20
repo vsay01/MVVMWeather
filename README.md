@@ -51,6 +51,7 @@ In this sample project, it focus on:
 | `datasource`  | MVVM with network call and database (Room)                                            |
 | `workmanager` | Add a work manager to get the current weather with the saved location from DataStore  |
 | `flow`        | Show how to use kotlin flow in MVVM                                                   |
+| `di`          | Android Hilt and Kotlin full Flow integrated                                          |
 
 ## Recommended app architecture
 
