@@ -3,7 +3,9 @@ package com.vsaytech.mvvmweather.ui
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.vsaytech.mvvmweather.databinding.ActivityMyWeatherBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MyWeatherActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMyWeatherBinding

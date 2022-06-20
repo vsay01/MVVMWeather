@@ -1,24 +1,29 @@
 package com.vsaytech.mvvmweather.work
 
 import android.content.Context
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.vsaytech.mvvmweather.data.database.getDatabase
 import com.vsaytech.mvvmweather.data.repository.currentweather.CurrentWeatherRepository
 import com.vsaytech.mvvmweather.util.LOCATION_KEY
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import retrofit2.HttpException
 import timber.log.Timber
 
-class RefreshWeatherDataWorker(appContext: Context, params: WorkerParameters) :
+@HiltWorker
+class RefreshWeatherDataWorker @AssistedInject constructor(
+    @Assisted appContext: Context,
+    @Assisted params: WorkerParameters,
+    private val currentWeatherRepository: CurrentWeatherRepository
+) :
     CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
-        val database = getDatabase(applicationContext)
         val location = inputData.getString(LOCATION_KEY)
 
-        val repository = CurrentWeatherRepository(database)
         try {
             location?.let {
-                repository.getCurrentWeather(location)
+                currentWeatherRepository.getCurrentWeather(location)
             } ?: kotlin.run {
                 Timber.d("Location is null or empty")
             }

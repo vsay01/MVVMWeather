@@ -3,81 +3,61 @@ package com.vsaytech.mvvmweather.ui.currentweather
 import android.app.Application
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.vsaytech.mvvmweather.data.database.getDatabase
 import com.vsaytech.mvvmweather.data.network.asCurrentWeatherDailyForecastDomainModel
 import com.vsaytech.mvvmweather.data.network.asCurrentWeatherDomainModel
 import com.vsaytech.mvvmweather.data.repository.currentweather.CurrentWeatherRepository
 import com.vsaytech.mvvmweather.ui.domain.CurrentWeather
 import com.vsaytech.mvvmweather.ui.domain.CurrentWeatherDailyForecast
+import com.vsaytech.mvvmweather.ui.uistate.NetworkResult
 import com.vsaytech.mvvmweather.util.LOCATION_PREFERENCE_KEY
 import com.vsaytech.mvvmweather.util.locationDataStore
-import kotlinx.coroutines.flow.catch
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
+import javax.inject.Inject
 
-class CurrentWeatherViewModel(private val app: Application) : AndroidViewModel(app) {
-
-    /**
-     * The data source this ViewModel will fetch results from.
-     */
-    private val currentWeatherRepository = CurrentWeatherRepository(getDatabase(app))
+@HiltViewModel
+class CurrentWeatherViewModel @Inject constructor(
+    private val app: Application,
+    private val currentWeatherRepository: CurrentWeatherRepository
+) : AndroidViewModel(app) {
 
     /**
      * A currentWeather displayed on the screen.
      */
-    val currentWeather: LiveData<CurrentWeather> = Transformations.map(
-        currentWeatherRepository.currentWeather
-            .catch {
-                _eventNetworkError.value = true
-            }.asLiveData()
-    ) {
-        it.asCurrentWeatherDomainModel()
-    }
+    // publicly exposed live data, not mutable
+    val currentWeatherStateFlow: StateFlow<NetworkResult<CurrentWeather>>
+        get() = currentWeatherMutableStateFlow
+
+    private val currentWeatherMutableStateFlow: MutableStateFlow<NetworkResult<CurrentWeather>> = MutableStateFlow(NetworkResult.Loading())
 
     /**
      * A dailyForecastWeather displayed on the screen.
      */
-    val dailyForecastWeatherList: LiveData<List<CurrentWeatherDailyForecast>> = Transformations.map(
-        currentWeatherRepository.currentWeather
-            .catch {
-                _eventNetworkError.value = true
-            }.asLiveData()
-    ) {
-        it.forecast.asCurrentWeatherDailyForecastDomainModel()
+    // publicly exposed live data, not mutable
+    val dailyForecastWeatherListStateFlow: StateFlow<NetworkResult<List<CurrentWeatherDailyForecast>>>
+        get() = dailyForecastWeatherListMutableStateFlow
+
+    private val dailyForecastWeatherListMutableStateFlow: MutableStateFlow<NetworkResult<List<CurrentWeatherDailyForecast>>> =
+        MutableStateFlow(NetworkResult.Loading())
+
+    init {
+        viewModelScope.launch {
+            currentWeatherRepository.currentWeather
+                // Update View with the latest currentWeatherDB
+                // Writes to the value property of MutableStateFlow,
+                // adding a new element to the flow and updating all of its collectors
+                .collect { currentWeather ->
+                    currentWeatherMutableStateFlow.value = NetworkResult.Success(currentWeather.asCurrentWeatherDomainModel())
+
+                    dailyForecastWeatherListMutableStateFlow.value =
+                        NetworkResult.Success(currentWeather.forecast.asCurrentWeatherDailyForecastDomainModel())
+                }
+        }
     }
-
-    /**
-     * Event triggered for network error. This is private to avoid exposing a
-     * way to set this value to observers.
-     */
-    private var _eventNetworkError = MutableLiveData(false)
-
-    /**
-     * Event triggered for network error. Views should use this to get access
-     * to the data.
-     */
-    val eventNetworkError: LiveData<Boolean>
-        get() = _eventNetworkError
-
-    /**
-     * Flag to display the error message. This is private to avoid exposing a
-     * way to set this value to observers.
-     */
-    private var _isNetworkErrorShown = MutableLiveData(false)
-
-    /**
-     * Flag to display the error message. Views should use this to get access
-     * to the data.
-     */
-    val isNetworkErrorShown: LiveData<Boolean>
-        get() = _isNetworkErrorShown
 
     /**
      * Refresh data from the repository. Use a coroutine launch to run in a
@@ -86,15 +66,12 @@ class CurrentWeatherViewModel(private val app: Application) : AndroidViewModel(a
     fun refreshCurrentWeatherFromRepository(location: String) {
         viewModelScope.launch {
             try {
+                currentWeatherMutableStateFlow.value = NetworkResult.Loading()
                 saveLocationDataStore(location)
                 currentWeatherRepository.getCurrentWeather(location)
-                _eventNetworkError.value = false
-                _isNetworkErrorShown.value = false
-
             } catch (networkError: IOException) {
                 // Show a Toast error message and hide the progress bar.
-                if (currentWeather.value == null)
-                    _eventNetworkError.value = true
+                currentWeatherMutableStateFlow.value = NetworkResult.Error("Refresh current weather from repository", networkError)
             }
         }
     }
@@ -102,26 +79,6 @@ class CurrentWeatherViewModel(private val app: Application) : AndroidViewModel(a
     private suspend fun saveLocationDataStore(locationParams: String) {
         app.locationDataStore.edit { location ->
             location[LOCATION_PREFERENCE_KEY] = locationParams
-        }
-    }
-
-    /**
-     * Resets the network error flag.
-     */
-    fun onNetworkErrorShown() {
-        _isNetworkErrorShown.value = true
-    }
-
-    /**
-     * Factory for constructing DevByteViewModel with parameter
-     */
-    class Factory(private val app: Application) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(CurrentWeatherViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return CurrentWeatherViewModel(app) as T
-            }
-            throw IllegalArgumentException("Unable to construct viewmodel")
         }
     }
 }

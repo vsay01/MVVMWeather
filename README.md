@@ -85,9 +85,18 @@ There are three layers:
 
 ## WorkManager and DataStore (TBD)
 
+## Kotlin Flow in Room and Repository (Still use LiveData in ViewModel and UI) (TBD)
+- Make use of NetworkResult sealed class for LOADING, SUCCESS, ERROR states
 
-## Kotlin Flow in MVVM (TBD)
+## Kotlin full Flow integrated (TBD)
 
+## Android Hilt integrated (TBD)
+- Inject viewModel
+- Inject repository
+- Inject database
+- Inject network (Retrofit)
+- Inject RecyclerView adapter
+- Hilt and WorkManager
 
 ```
 Copyright 2022 The Android Open Source Project

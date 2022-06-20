@@ -12,7 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.vsaytech.mvvmweather.R
 import com.vsaytech.mvvmweather.databinding.FragmentDailyForecastBinding
+import com.vsaytech.mvvmweather.ui.currentweather.DailyForecastAdapter
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class DailyForecastFragment : Fragment() {
 
     private var _binding: FragmentDailyForecastBinding? = null
@@ -21,7 +25,9 @@ class DailyForecastFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private var hourlyAdapter: HourlyForecastAdapter? = null
+    @Inject
+    lateinit var hourlyAdapter: HourlyForecastAdapter
+
     private val args: DailyForecastFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -49,7 +55,6 @@ class DailyForecastFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.title = getString(R.string.hour_forecast, locationName)
 
         if (currentWeatherDailyForecast.hourList.isNotEmpty()) {
-            hourlyAdapter = HourlyForecastAdapter()
             binding.apply {
                 rvHourlyForecast.apply {
                     addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))

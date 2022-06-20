@@ -8,8 +8,11 @@ import com.vsaytech.mvvmweather.R
 import com.vsaytech.mvvmweather.data.model.HourWS
 import com.vsaytech.mvvmweather.databinding.HourlyForecastItemBinding
 import com.vsaytech.mvvmweather.util.getTimeFromDateString
+import dagger.hilt.android.scopes.FragmentScoped
+import javax.inject.Inject
 
-class HourlyForecastAdapter : RecyclerView.Adapter<HourlyForecastViewHolder>() {
+@FragmentScoped
+class HourlyForecastAdapter @Inject constructor() : RecyclerView.Adapter<HourlyForecastViewHolder>() {
     /**
      * The WeatherHourlyForecastList that our Adapter will show
      */

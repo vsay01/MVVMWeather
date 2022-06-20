@@ -8,8 +8,17 @@ import com.vsaytech.mvvmweather.databinding.DailyForecastItemBinding
 import com.vsaytech.mvvmweather.ui.domain.CurrentWeatherDailyForecast
 import com.vsaytech.mvvmweather.util.getDayNameFromDateString
 import com.vsaytech.mvvmweather.util.getMonthDayFromDateString
+import dagger.hilt.android.scopes.FragmentScoped
+import javax.inject.Inject
 
-class DailyForecastAdapter(private val dailyForecastClickLister: DailyForecastClickListener) : RecyclerView.Adapter<DailyForecastViewHolder>() {
+@FragmentScoped
+class DailyForecastAdapter @Inject constructor() : RecyclerView.Adapter<DailyForecastViewHolder>() {
+
+    private var onDailyForecastItemClickLister: ((CurrentWeatherDailyForecast) -> Unit)? = null
+    fun setOnDailyForecastItemClickLister(listener: (CurrentWeatherDailyForecast) -> Unit) {
+        onDailyForecastItemClickLister = listener
+    }
+
     /**
      * The WeatherDailyForecastList that our Adapter will show
      */
@@ -41,7 +50,7 @@ class DailyForecastAdapter(private val dailyForecastClickLister: DailyForecastCl
      */
     override fun onBindViewHolder(holder: DailyForecastViewHolder, position: Int) {
         val paymentBean: CurrentWeatherDailyForecast = currentWeatherDailyForecastList[position]
-        holder.bind(paymentBean, dailyForecastClickLister)
+        holder.bind(paymentBean, onDailyForecastItemClickLister)
     }
 }
 
@@ -50,10 +59,12 @@ class DailyForecastAdapter(private val dailyForecastClickLister: DailyForecastCl
  */
 class DailyForecastViewHolder(private val itemBinding: DailyForecastItemBinding) :
     RecyclerView.ViewHolder(itemBinding.root) {
-    fun bind(currentWeatherDailyForecast: CurrentWeatherDailyForecast, dailyForecastClickLister: DailyForecastClickListener) {
+    fun bind(currentWeatherDailyForecast: CurrentWeatherDailyForecast, onDailyForecastItemClickLister: ((CurrentWeatherDailyForecast) -> Unit)?) {
         itemBinding.apply {
             clDailyForecast.setOnClickListener {
-                dailyForecastClickLister.onDailyForecastClicked(currentWeatherDailyForecast)
+                onDailyForecastItemClickLister?.let {
+                    it(currentWeatherDailyForecast)
+                }
             }
             tvDay.text = getDayNameFromDateString(currentWeatherDailyForecast.day)
             tvDate.text = getMonthDayFromDateString(currentWeatherDailyForecast.monthDay)

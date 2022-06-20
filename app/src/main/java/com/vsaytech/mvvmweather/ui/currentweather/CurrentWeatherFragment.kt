@@ -11,7 +11,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.Debug.getLocation
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -23,12 +26,15 @@ import com.vsaytech.mvvmweather.R
 import com.vsaytech.mvvmweather.databinding.FragmentCurrentWeatherBinding
 import com.vsaytech.mvvmweather.extensions.getLastLocation
 import com.vsaytech.mvvmweather.extensions.locationPermissions
-import com.vsaytech.mvvmweather.ui.domain.CurrentWeather
-import com.vsaytech.mvvmweather.ui.domain.CurrentWeatherDailyForecast
+import com.vsaytech.mvvmweather.ui.uistate.NetworkResult
 import com.vsaytech.mvvmweather.util.getDayNameFromDateTimeString
 import com.vsaytech.mvvmweather.util.getMonthDayFromDateTimeString
 import com.vsaytech.mvvmweather.util.getTimeFromDateString
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class CurrentWeatherFragment : Fragment() {
     private val requestLocationMultiplePermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
@@ -58,19 +64,15 @@ class CurrentWeatherFragment : Fragment() {
     /**
      * RecyclerView Adapter for converting a list of DailyForecast.
      */
-    private var dailyForecastAdapter: DailyForecastAdapter? = null
+    @Inject
+    lateinit var dailyForecastAdapter: DailyForecastAdapter
 
     /**
      * One way to delay creation of the viewModel until an appropriate lifecycle method is to use
      * lazy. This requires that viewModel not be referenced before onActivityCreated, which we
      * do in this Fragment.
      */
-    private val viewModel: CurrentWeatherViewModel by lazy {
-        val activity = requireNotNull(this.activity) {
-            "You can only access the viewModel after onActivityCreated()"
-        }
-        ViewModelProvider(this, CurrentWeatherViewModel.Factory(activity.application))[CurrentWeatherViewModel::class.java]
-    }
+    private val viewModel by viewModels<CurrentWeatherViewModel>()
 
     private var _binding: FragmentCurrentWeatherBinding? = null
 
@@ -112,51 +114,27 @@ class CurrentWeatherFragment : Fragment() {
     }
 
     private fun initView() {
-        viewModel.currentWeather.observe(viewLifecycleOwner) { currentWeather ->
-            currentWeather?.apply {
-                binding.apply {
-                    tvCity.text = name
-                    tvDayTime.text = getString(
-                        R.string.current_weather_day_month_time,
-                        getDayNameFromDateTimeString(currentDayTime),
-                        getMonthDayFromDateTimeString(currentDayTime),
-                        getTimeFromDateString(currentDayTime)
-                    )
-                    tvCondition.text = conditionText
-                    activity?.let { Glide.with(it).load(conditionIcon).into(ivCondition) }
-                    tvCurrentTemp.text = getString(R.string.current_weather_temp, temp_f.toString())
-                    tvTempFeelLike.text = getString(R.string.current_weather_temp, feelslike_f.toString())
-                    gpWeatherTopSection.visibility = View.VISIBLE
-                    pbLoadingSpinner.visibility = View.GONE
+        // Start a coroutine in the lifecycle scope
+        viewLifecycleOwner.lifecycleScope.launch {
+            // repeatOnLifecycle launches the block in a new coroutine every time the
+            // lifecycle is in the STARTED state (or above) and cancels it when it's STOPPED.
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    observeCurrentWeatherStateFlow()
                 }
-            }
-        }
-        viewModel.dailyForecastWeatherList.observe(viewLifecycleOwner) { currentWeatherDailyForecast ->
-            currentWeatherDailyForecast?.apply {
-                binding.apply {
-                    if (currentWeatherDailyForecast.isNotEmpty()) {
-                        tvTempMin.text = getString(R.string.current_weather_temp, get(0).mintemp_f.toString())
-                        tvTempMax.text = getString(R.string.current_weather_temp, get(0).maxtemp_f.toString())
-                        dailyForecastAdapter?.currentWeatherDailyForecastList = currentWeatherDailyForecast
-                        tvDailyForecastLabel.visibility = View.VISIBLE
-                        tvDailyForecastDay.visibility = View.VISIBLE
-                    }
+
+                launch {
+                    observeDailyWeatherForecastListStateFlow()
                 }
             }
         }
 
-        // Observer for the network error.
-        viewModel.eventNetworkError.observe(viewLifecycleOwner) { isNetworkError ->
-            if (isNetworkError) {
-                binding.gpWeatherTopSection.visibility = View.GONE
-                onNetworkError()
-            }
-            hideIfNetworkError(binding.pbLoadingSpinner, isNetworkError, viewModel.currentWeather.value)
-        }
+        binding.rvDailyForecast.apply {
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+            layoutManager = LinearLayoutManager(context)
+            adapter = dailyForecastAdapter
 
-        //DailyForecast List
-        dailyForecastAdapter = DailyForecastAdapter(object : DailyForecastClickListener {
-            override fun onDailyForecastClicked(currentWeatherDailyForecast: CurrentWeatherDailyForecast) {
+            dailyForecastAdapter.setOnDailyForecastItemClickLister { currentWeatherDailyForecast ->
                 val options = navOptions {
                     anim {
                         enter = R.anim.slide_in_right
@@ -172,34 +150,99 @@ class CurrentWeatherFragment : Fragment() {
                         options
                     )
             }
-        })
-        binding.rvDailyForecast.apply {
-            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-            layoutManager = LinearLayoutManager(context)
-            adapter = dailyForecastAdapter
+        }
+    }
+
+    private suspend fun observeDailyWeatherForecastListStateFlow() {
+        // Trigger the flow and start listening for values.
+        // Note that this happens when lifecycle is STARTED and stops
+        // collecting when the lifecycle is STOPPED
+        viewModel.dailyForecastWeatherListStateFlow.collect { resultNetwork ->
+            when (resultNetwork) {
+                is NetworkResult.Success -> {
+                    resultNetwork.data.let { currentWeatherDailyForecast ->
+                        binding.pbLoadingSpinner.visibility = View.GONE
+                        currentWeatherDailyForecast.apply {
+                            binding.apply {
+                                if (currentWeatherDailyForecast.isNotEmpty()) {
+                                    tvTempMin.text = getString(R.string.current_weather_temp, get(0).mintemp_f.toString())
+                                    tvTempMax.text = getString(R.string.current_weather_temp, get(0).maxtemp_f.toString())
+                                    dailyForecastAdapter.currentWeatherDailyForecastList = currentWeatherDailyForecast
+                                    tvDailyForecastLabel.visibility = View.VISIBLE
+                                    tvDailyForecastDay.visibility = View.VISIBLE
+                                }
+                            }
+                        }
+                    }
+                }
+                is NetworkResult.Error -> {
+                    //show error message
+                    binding.pbLoadingSpinner.visibility = View.GONE
+                    Toast.makeText(
+                        requireContext(),
+                        resultNetwork.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                is NetworkResult.Loading<*> -> {
+                    //show loader, shimmer effect etc
+                    binding.pbLoadingSpinner.visibility = View.VISIBLE
+                    binding.gpWeatherTopSection.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private suspend fun observeCurrentWeatherStateFlow() {
+        // Trigger the flow and start listening for values.
+        // Note that this happens when lifecycle is STARTED and stops
+        // collecting when the lifecycle is STOPPED
+        viewModel.currentWeatherStateFlow.collect { resultNetwork ->
+            when (resultNetwork) {
+                is NetworkResult.Success -> {
+                    binding.pbLoadingSpinner.visibility = View.GONE
+                    resultNetwork.data.let { currentWeather ->
+                        currentWeather.apply {
+                            binding.apply {
+                                tvCity.text = name
+                                tvDayTime.text = getString(
+                                    R.string.current_weather_day_month_time,
+                                    getDayNameFromDateTimeString(currentDayTime),
+                                    getMonthDayFromDateTimeString(currentDayTime),
+                                    getTimeFromDateString(currentDayTime)
+                                )
+                                tvCondition.text = conditionText
+                                activity?.let { Glide.with(it).load(conditionIcon).into(ivCondition) }
+                                tvCurrentTemp.text = getString(R.string.current_weather_temp, temp_f.toString())
+                                tvTempFeelLike.text = getString(R.string.current_weather_temp, feelslike_f.toString())
+                                gpWeatherTopSection.visibility = View.VISIBLE
+                                pbLoadingSpinner.visibility = View.GONE
+                            }
+                        }
+                    }
+                }
+                is NetworkResult.Error -> {
+                    //show error message
+                    binding.pbLoadingSpinner.visibility = View.GONE
+                    Toast.makeText(
+                        requireContext(),
+                        resultNetwork.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                is NetworkResult.Loading<*> -> {
+                    //show loader, shimmer effect etc
+                    binding.pbLoadingSpinner.visibility = View.VISIBLE
+                    binding.gpWeatherTopSection.visibility = View.GONE
+                }
+            }
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    /**
-     * Method for displaying a Toast error message for network errors.
-     */
-    private fun onNetworkError() {
-        if (viewModel.isNetworkErrorShown.value == false) {
-            Toast.makeText(activity, "Network Error", Toast.LENGTH_LONG).show()
-            viewModel.onNetworkErrorShown()
-        }
-    }
-
-    private fun hideIfNetworkError(view: View, isNetWorkError: Boolean, currentWeather: CurrentWeather?) {
-        view.visibility = if (currentWeather != null) View.GONE else View.VISIBLE
-
-        if (isNetWorkError) {
-            view.visibility = View.GONE
-        }
     }
 }
